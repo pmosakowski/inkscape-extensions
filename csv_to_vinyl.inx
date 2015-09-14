@@ -8,7 +8,8 @@
     <dependency type="executable" location="extensions">csv_to_vinyl.py</dependency>
   
     <param name="help_text" type="description">This extension reads a list of names from a csv file, converts them into text svg objects and places them in the file. Author: Pawel Mosakowski</param>
-    <param name="csv_file" type="string">/home</param> 
+    <param name="csv_file" type="string" gui-text="CSV file">/home</param>
+    <param name="csv_field_num" type="int" gui-text="Field number" min="0">0</param>
 
     <effect>
         <object-type>all</object-type>

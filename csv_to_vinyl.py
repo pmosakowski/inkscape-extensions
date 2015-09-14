@@ -5,6 +5,7 @@ sys.path.append('/usr/share/inkscape/extensions')
 
 from subprocess import check_output
 import csv
+import os.path
 
 from inkex import Effect as InkscapeEffect
 from inkex import etree, addNS
@@ -16,12 +17,18 @@ class CsvToVinyl(InkscapeEffect):
         self.OptionParser.add_option('-f', '--csv_file', action = 'store',
             type=str, dest = 'csv_file', default = '/home',
             help = 'CSV file to read names from')
+        self.OptionParser.add_option('-n', '--csv_field_num', action = 'store',
+            type=int, dest = 'csv_field_num', default = 0,
+            help = 'Number of the field number that contains strings we want to vectorize, starts at 0')
         self.names = names
         self.filename = sys.argv[-1]
 
     def effect(self):
         self.root = self.document.getroot()
         self.csv_file = self.options.csv_file
+        self.csv_field_num = self.options.csv_field_num
+
+        self.names = self.load_csv_file(self.csv_file, self.csv_field_num)
 
         if len(self.selected) == 1:
             # extract style from selection
@@ -57,6 +64,22 @@ class CsvToVinyl(InkscapeEffect):
         first_line.text = firstname
         second_line = etree.SubElement(text, addNS('tspan','svg'), line_attribs)
         second_line.text = lastname
+
+    @staticmethod
+    def load_csv_file(filename, field_num=0):
+        """
+        Load CSV file and return field with index 'field_num' of each row as a list.
+        Fields are indexed from 0.
+        """
+
+        with open(filename, 'r') as csv_file:
+            lines = []
+
+            csvreader = csv.reader(csv_file)
+            for row in csvreader:
+                lines.append(row[field_num])
+
+            return lines
 
     def resize_page(self):
         csv = check_output(["inkscape", "--without-gui", "--query-all", self.filename])
