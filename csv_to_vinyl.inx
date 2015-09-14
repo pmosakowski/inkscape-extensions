@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+
+    <_name>CSV to SVG text</_name>
+    <id>net.mosakowski.inkscape.csv_to_vinyl</id>
+  
+    <dependency type="executable" location="extensions">inkex.py</dependency>
+    <dependency type="executable" location="extensions">csv_to_vinyl.py</dependency>
+  
+    <param name="help_text" type="description">This extension reads a list of names from a csv file, converts them into text svg objects and places them in the file. Author: Pawel Mosakowski</param>
+    <param name="csv_file" type="string">/home</param> 
+
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu _name="Text"/>
+        </effects-menu>
+    </effect>
+
+    <script>
+        <command reldir="extensions" interpreter="python">csv_to_vinyl.py</command>
+    </script>
+
+</inkscape-extension>
