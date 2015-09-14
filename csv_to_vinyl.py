@@ -39,9 +39,9 @@ class CsvToVinyl(InkscapeEffect):
             assert self.text_style != None
 
             for name in self.names:
-                self.add_name(name)
+                self.__add_name(name)
 
-    def add_name(self, name):
+    def __add_name(self, name):
         parent = self.current_layer
 
         text_attribs = {
