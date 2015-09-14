@@ -104,34 +104,5 @@ class CsvToVinyl(InkscapeEffect):
 
         return line_spacing, delta_y
 
-    def resize_page(self):
-        csv = check_output(["inkscape", "--without-gui", "--query-all", self.filename])
-        print(csv)
-        svg = self.document.getroot()
-        width = self.unittouu(svg.get("width"))
-        height = self.unittouu(svg.get("height"))
-        print(width)
-        print(svg.get("width"))
-        print(height)
-        print(svg.get("height"))
-        #print("Height " + svg.get("height"))
-        #print(self.filename)
-
-names = [
-    'John Does',
-    'Albus Dumbledore',
-    'GI Joe',
-    'Jet Jaguar',
-    'John McClaine',
-    'Robert Maguire',
-    'Magnus Mangusson',
-    'Lucy Jones',
-    'Jan Kowalski',
-    'Frodo Baggins',
-    'Phileas Fogg',
-    'Katherine Romanoff',
-    'Kim Jong-Illest',
-]
-
 effect = CsvToVinyl(names)
 effect.affect()
