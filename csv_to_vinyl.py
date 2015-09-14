@@ -31,9 +31,13 @@ class CsvToVinyl(InkscapeEffect):
         self.names = self.load_csv_file(self.csv_file, self.csv_field_num)
 
         if len(self.selected) == 1:
-            # extract style from selection
-            self.text_style = self.selected.popitem()[1].attrib["style"]
+            # extract style and attributes from selection
+            selected = self.selected.popitem()[1]
+            self.text_style = selected.attrib["style"]
+            self.line_spacing, self.delta_y = self.get_linespacing(selected)
+
             assert self.text_style != None
+
             for name in self.names:
                 self.add_name(name)
 
@@ -44,14 +48,17 @@ class CsvToVinyl(InkscapeEffect):
             'style' : self.text_style,
             'x' : str(0),
             'y' : str(0),
-            addNS('linespacing','sodipodi') : '100%',
+            addNS('linespacing','sodipodi') : str(self.line_spacing),
         }
 
-        line_attribs = {
+        line1_attribs = {
             'x' : str(0),
             'y' : str(0),
             addNS('role','sodipodi') : 'line',
         }
+
+        line2_attribs = dict(line1_attribs)
+        line2_attribs['y'] = str(self.delta_y)
 
         # make all-caps and turn whitespace into linebreak
         name = name.upper()
@@ -60,9 +67,9 @@ class CsvToVinyl(InkscapeEffect):
         
         # add nodes to doucument tree
         text = etree.SubElement(parent, addNS('text','svg'), attrib=text_attribs)
-        first_line = etree.SubElement(text, addNS('tspan','svg'), line_attribs)
+        first_line = etree.SubElement(text, addNS('tspan','svg'), attrib=line1_attribs)
         first_line.text = firstname
-        second_line = etree.SubElement(text, addNS('tspan','svg'), line_attribs)
+        second_line = etree.SubElement(text, addNS('tspan','svg'), attrib=line2_attribs)
         second_line.text = lastname
 
     @staticmethod
@@ -80,6 +87,22 @@ class CsvToVinyl(InkscapeEffect):
                 lines.append(row[field_num])
 
             return lines
+
+    @staticmethod
+    def get_linespacing(text):
+        """
+        Examines two line 'text' and returns a tuple of the sodipodi linespacing and
+        delta of their y coordinates, ie. delta_y = y2 - y1.
+        Returns (linespacing, delta_y)
+        """
+
+        y1 = float(text[0].attrib["y"])
+        y2 = float(text[1].attrib["y"])
+
+        delta_y = y2 - y1
+        line_spacing = text.attrib[addNS('linespacing','sodipodi')]
+
+        return line_spacing, delta_y
 
     def resize_page(self):
         csv = check_output(["inkscape", "--without-gui", "--query-all", self.filename])
