@@ -6,21 +6,36 @@ sys.path.append('/usr/share/inkscape/extensions')
 from subprocess import check_output
 import csv
 import os.path
+import argparse
 
 from inkex import Effect as InkscapeEffect
 from inkex import etree, addNS
 import simplestyle
 
+def str_to_bool(v):
+      return v.lower() in ("yes", "true", "t", "1")
+
 class CsvToVinyl(InkscapeEffect):
     def __init__(self):
         InkscapeEffect.__init__(self)
-        self.OptionParser.add_option('-f', '--csv_file', action = 'store',
-            type=str, dest = 'csv_file', default = '/home',
+        self.parser = argparse.ArgumentParser()
+
+        self.parser.add_argument("--id", action='append', type=str, dest='ids', default=[],
+            help='id attribute of object to manipulate')
+        self.parser.add_argument('filename',
+            help='temporary file on which extension will operate')
+        self.parser.add_argument('-f', '--csv_file', type=str, default = '/home',
             help = 'CSV file to read names from')
-        self.OptionParser.add_option('-n', '--csv_field_num', action = 'store',
-            type=int, dest = 'csv_field_num', default = 0,
-            help = 'Number of the field number that contains strings we want to vectorize, starts at 0')
+        self.parser.add_argument('-n', '--csv_field_num', type=int, default = 1,
+            help = 'Number of the field number that contains strings we want to vectorize, starts at 1')
+        self.parser.add_argument('-l', '--separate_sizes', type=str_to_bool, default = False,
+            help = 'Separate names for different sized graments onto different layers')
+        self.parser.add_argument('-s', '--size_field_num', type=int, default = 1,
+            help = 'Field number containing size for a given name')
         self.filename = sys.argv[-1]
+
+    def getoptions(self,args=sys.argv[1:]):
+        self.options = self.parser.parse_args()
 
     def effect(self):
         self.root = self.document.getroot()
