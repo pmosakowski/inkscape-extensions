@@ -85,11 +85,12 @@ class CsvToVinyl(InkscapeEffect):
             line_attribs['y'] = str(y + self.delta_y)
 
     @staticmethod
-    def load_csv_file(filename, field_num=0):
+    def load_csv_file(filename, field_num=1):
         """
         Load CSV file and return field with index 'field_num' of each row as a list.
-        Fields are indexed from 0.
+        Fields are indexed from 1.
         """
+        field_num -= 1
 
         with open(filename, 'r') as csv_file:
             lines = []
