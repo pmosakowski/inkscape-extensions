@@ -18,12 +18,14 @@ class Roland(InkscapeEffect):
         if len(self.selected) > 0:
             svg = self.document.getroot()
             bboxes = self.calculate_bboxes(self.selected)
-            for bbox in bboxes:
-                self.draw_bbox(bbox)
+            #for id, node, bbox in bboxes:
+            #    self.draw_bbox(bbox)
+            self.place(bboxes)
 
     @staticmethod
     def calculate_bboxes(nodes):
-        bboxes = [computeBBox([node]) for id, node in nodes.items()]
+        bboxes = [(id, node, computeBBox([node]))
+                for id, node in nodes.items()]
         return bboxes
     
     def draw_bbox(self, bbox):
@@ -50,6 +52,36 @@ class Roland(InkscapeEffect):
         }
 
         rect = etree.SubElement(layer, addNS('rect','svg'), attribs )
+
+    def place(self, nodes):
+        max_line_width = self.unittouu('450mm')
+
+        x_gap = y_gap = self.unittouu('10mm')
+        x_start = self.unittouu('0mm')
+        y_start = self.unittouu('1600mm')
+
+        total_width = 0
+        total_height = 0
+
+        for id, node, bbox in nodes:
+            node_width = x_gap + self.width(bbox)
+            if total_width + node_width < max_line_width:
+                node.attrib['x'] = str(x_start + x_gap + total_width)
+                node.attrib['y'] = str(y_start - (y_gap + total_height + self.height(bbox)))
+                total_width += node_width
+
+    def width(self,bbox):
+        (x1, x2, y1, y2) = bbox
+        width = x2 - x1
+
+        return width
+
+    def height(self,bbox):
+        (x1, x2, y1, y2) = bbox
+        height = y2 - y1
+
+        return height
+
 
 effect = Roland()
 effect.affect()
