@@ -58,39 +58,47 @@ class Roland(InkscapeEffect):
         max_line_width = self.unittouu('450mm')
 
         x_gap = y_gap = self.unittouu('10mm')
-        x_start = self.unittouu('0mm')
-        y_start = self.unittouu('1600mm')
+        x_start = self.unittouu('3mm')
+        y_start = self.unittouu('1600mm') - self.unittouu('3mm')
 
         total_width = 0
         total_height = 0
 
+        line_nodes = []
+
         for id, node, bbox in nodes:
             x, _, y, _ = bbox
 
-            x_dest = x_start + x_gap + total_width
-            y_dest = y_start - (y_gap + total_height + self.height(bbox))
-
             node_width = x_gap + self.width(bbox)
-            if total_width + node_width < max_line_width:
-                if node.tag == addNS('path','svg'):
-                    x_delta = x_dest - x
-                    y_delta = y_dest - y
+            # reached end of line, reset, move higher
+            if total_width + node_width > max_line_width:
+                total_width = 0
+                total_height += self.height(computeBBox(line_nodes)) + y_gap
+                line_nodes = []
 
-                    path = parsePath(node.attrib['d'])
-                    translatePath(path, x_delta, y_delta)
-                    node.attrib['d'] = formatPath(path)
-                elif node.tag == addNS('g','svg'):
-                    x_delta = x_dest - x
-                    y_delta = y_dest - y
+            x_dest = x_start + total_width
+            y_dest = y_start - (total_height + self.height(bbox))
 
-                    translation_matrix = [[1.0, 0.0, x_delta], [0.0, 1.0, y_delta]]
-                    applyTransformToNode(translation_matrix, node)
+            if node.tag == addNS('path','svg'):
+                x_delta = x_dest - x
+                y_delta = y_dest - y
 
-                else:
-                    node.attrib['x'] = str(x_dest)
-                    node.attrib['y'] = str(y_dest)
+                path = parsePath(node.attrib['d'])
+                translatePath(path, x_delta, y_delta)
+                node.attrib['d'] = formatPath(path)
+            elif node.tag == addNS('g','svg'):
+                x_delta = x_dest - x
+                y_delta = y_dest - y
 
-                total_width += node_width
+                translation_matrix = [[1.0, 0.0, x_delta], [0.0, 1.0, y_delta]]
+                applyTransformToNode(translation_matrix, node)
+
+            else:
+                node.attrib['x'] = str(x_dest)
+                node.attrib['y'] = str(y_dest)
+
+            total_width += node_width
+            line_nodes.append(node)
 
     def width(self,bbox):
         (x1, x2, y1, y2) = bbox
