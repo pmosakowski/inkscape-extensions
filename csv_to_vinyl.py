@@ -50,26 +50,24 @@ class CsvToVinyl(InkscapeEffect):
             addNS('linespacing','sodipodi') : str(self.line_spacing),
         }
 
-        line1_attribs = {
+        line_attribs = {
             'x' : str(0),
             'y' : str(0),
             addNS('role','sodipodi') : 'line',
         }
 
-        line2_attribs = dict(line1_attribs)
-        line2_attribs['y'] = str(self.delta_y)
-
         # make all-caps and turn whitespace into linebreak
-        name = name.upper()
-        firstname = name.split()[0]
-        lastname = name.split()[1]
-        
+        lines = name.upper().split()
+
         # add nodes to doucument tree
         text = etree.SubElement(parent, addNS('text','svg'), attrib=text_attribs)
-        first_line = etree.SubElement(text, addNS('tspan','svg'), attrib=line1_attribs)
-        first_line.text = firstname
-        second_line = etree.SubElement(text, addNS('tspan','svg'), attrib=line2_attribs)
-        second_line.text = lastname
+        for line in lines:
+            text_line = etree.SubElement(text, addNS('tspan','svg'), attrib=line_attribs)
+            text_line.text = line
+
+            # set coordinates for next line
+            y = float(line_attribs['y'])
+            line_attribs['y'] = str(y + self.delta_y)
 
     @staticmethod
     def load_csv_file(filename, field_num=0):
