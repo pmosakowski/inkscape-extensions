@@ -8,6 +8,7 @@ from inkex import etree, addNS
 
 from simpletransform import computeBBox
 from simplestyle import formatStyle
+from simplepath import parsePath, translatePath, formatPath
 
 class Roland(InkscapeEffect):
     def __init__(self):
@@ -64,10 +65,24 @@ class Roland(InkscapeEffect):
         total_height = 0
 
         for id, node, bbox in nodes:
+            x, _, y, _ = bbox
+
+            x_dest = x_start + x_gap + total_width
+            y_dest = y_start - (y_gap + total_height + self.height(bbox))
+
             node_width = x_gap + self.width(bbox)
             if total_width + node_width < max_line_width:
-                node.attrib['x'] = str(x_start + x_gap + total_width)
-                node.attrib['y'] = str(y_start - (y_gap + total_height + self.height(bbox)))
+                if node.tag == addNS('path','svg'):
+                    x_delta = x_dest - x
+                    y_delta = y_dest - y
+
+                    path = parsePath(node.attrib['d'])
+                    translatePath(path, x_delta, y_delta)
+                    node.attrib['d'] = formatPath(path)
+                else:
+                    node.attrib['x'] = str(x_dest)
+                    node.attrib['y'] = str(y_dest)
+
                 total_width += node_width
 
     def width(self,bbox):
