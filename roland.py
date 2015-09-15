@@ -6,7 +6,7 @@ sys.path.append('/usr/share/inkscape/extensions')
 from inkex import Effect as InkscapeEffect
 from inkex import etree, addNS
 
-from simpletransform import computeBBox
+from simpletransform import computeBBox, applyTransformToNode
 from simplestyle import formatStyle
 from simplepath import parsePath, translatePath, formatPath
 
@@ -79,6 +79,13 @@ class Roland(InkscapeEffect):
                     path = parsePath(node.attrib['d'])
                     translatePath(path, x_delta, y_delta)
                     node.attrib['d'] = formatPath(path)
+                elif node.tag == addNS('g','svg'):
+                    x_delta = x_dest - x
+                    y_delta = y_dest - y
+
+                    translation_matrix = [[1.0, 0.0, x_delta], [0.0, 1.0, y_delta]]
+                    applyTransformToNode(translation_matrix, node)
+
                 else:
                     node.attrib['x'] = str(x_dest)
                     node.attrib['y'] = str(y_dest)
