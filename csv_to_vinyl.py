@@ -12,7 +12,7 @@ from inkex import etree, addNS
 import simplestyle
 
 class CsvToVinyl(InkscapeEffect):
-    def __init__(self, names):
+    def __init__(self):
         InkscapeEffect.__init__(self)
         self.OptionParser.add_option('-f', '--csv_file', action = 'store',
             type=str, dest = 'csv_file', default = '/home',
@@ -20,7 +20,6 @@ class CsvToVinyl(InkscapeEffect):
         self.OptionParser.add_option('-n', '--csv_field_num', action = 'store',
             type=int, dest = 'csv_field_num', default = 0,
             help = 'Number of the field number that contains strings we want to vectorize, starts at 0')
-        self.names = names
         self.filename = sys.argv[-1]
 
     def effect(self):
@@ -104,5 +103,5 @@ class CsvToVinyl(InkscapeEffect):
 
         return line_spacing, delta_y
 
-effect = CsvToVinyl(names)
+effect = CsvToVinyl()
 effect.affect()
