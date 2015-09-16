@@ -1,15 +1,15 @@
-0,Socrates
-1,John Does
-2,Albus Dumbledore
-3,GI Joe
-4,Jet Jaguar
-5,John McClaine
-6,Robert Maguire
-7,Magnus Magnusson
-8,Lucy Jones
-9,Jan Kowalski
-10,Frodo Baggins
-11,Phileas Fogg
-12,Katherine Romanov
-13,Kim Jong-Illest
-14,Hulk
+M,0,Socrates
+M,1,John Does
+S,2,Albus Dumbledore
+14,3,GI Joe
+14,4,Jet Jaguar
+L,5,John McClaine
+M,6,Robert Maguire
+L,7,Magnus Magnusson
+S,8,Lucy Jones
+M,9,Jan Kowalski
+S,10,Frodo Baggins
+M,11,Phileas Fogg
+L,12,Katherine Romanov
+14,13,Kim Jong-Illest
+S,14,Hulk
