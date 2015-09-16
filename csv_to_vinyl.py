@@ -48,6 +48,7 @@ class CsvToVinyl(InkscapeEffect):
             # extract style and attributes from selection
             selected = self.selected.popitem()[1]
             self.text_style = selected.attrib["style"]
+            self.text_transform = selected.get('transform','')
             self.line_spacing, self.delta_y = self.get_linespacing(selected)
 
             assert self.text_style != None
@@ -60,6 +61,7 @@ class CsvToVinyl(InkscapeEffect):
 
         text_attribs = {
             'style' : self.text_style,
+            'transform' : self.text_transform,
             'x' : str(0),
             'y' : str(0),
             addNS('linespacing','sodipodi') : str(self.line_spacing),
