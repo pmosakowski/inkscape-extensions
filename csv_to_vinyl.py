@@ -3,6 +3,7 @@
 import sys
 sys.path.append('/usr/share/inkscape/extensions')
 
+from collections import namedtuple
 from subprocess import check_output
 import csv
 import os.path
@@ -11,6 +12,8 @@ import argparse
 from inkex import Effect as InkscapeEffect
 from inkex import etree, addNS
 import simplestyle
+
+Name = namedtuple('Name', ['name','size'])
 
 def str_to_bool(v):
       return v.lower() in ("yes", "true", "t", "1")
@@ -41,8 +44,10 @@ class CsvToVinyl(InkscapeEffect):
         self.root = self.document.getroot()
         self.csv_file = self.options.csv_file
         self.csv_field_num = self.options.csv_field_num
+        self.separate_sizes = self.options.separate_sizes
+        self.size_field_num = self.options.size_field_num
 
-        self.names = self.load_csv_file(self.csv_file, self.csv_field_num)
+        self.names = self.load_csv_file(self.csv_file, self.csv_field_num, self.size_field_num)
 
         if len(self.selected) == 1:
             # extract style and attributes from selection
@@ -54,10 +59,13 @@ class CsvToVinyl(InkscapeEffect):
             assert self.text_style != None
 
             for name in self.names:
-                self.__add_name(name)
+                self.__add_name(name.name, name.size)
 
-    def __add_name(self, name):
-        parent = self.current_layer
+    def __add_name(self, name, layer):
+        if self.separate_sizes:
+            parent = self.__get_layer(layer)
+        else:
+            parent = self.current_layer
 
         text_attribs = {
             'style' : self.text_style,
@@ -86,20 +94,40 @@ class CsvToVinyl(InkscapeEffect):
             y = float(line_attribs['y'])
             line_attribs['y'] = str(y + self.delta_y)
 
-    @staticmethod
-    def load_csv_file(filename, field_num=1):
+    def __get_layer(self, label):
+        root = self.document.getroot()
+        # return layer if already exists
+        for layer in root:
+            if layer.get(addNS('label','inkscape'), default=None) == str(label):
+                return layer
+        # otherwise create new one
+        layer_attrib = {
+                addNS('groupmode','inkscape') : 'layer',
+                addNS('label','inkscape') : str(label),
+        }
+
+        layer = etree.SubElement(root, addNS('g','svg'), attrib=layer_attrib)
+        return layer
+
+    def load_csv_file(self, filename, field_num=1, size_field_num=None):
         """
         Load CSV file and return field with index 'field_num' of each row as a list.
         Fields are indexed from 1.
         """
         field_num -= 1
+        if size_field_num:
+            size_field_num -= 1
 
         with open(filename, 'r') as csv_file:
             lines = []
 
             csvreader = csv.reader(csv_file)
             for row in csvreader:
-                lines.append(row[field_num])
+                if self.separate_sizes:
+                    name = Name(name=row[field_num],size=row[size_field_num])
+                else:
+                    name = Name(name=row[field_num],size='')
+                lines.append(name)
 
             return lines
 
