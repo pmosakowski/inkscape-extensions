@@ -66,15 +66,20 @@ class Roland(InkscapeEffect):
 
         line_nodes = []
 
+        group = etree.SubElement(self.current_layer, addNS('g','svg'))
+
         for id, node, bbox in nodes:
             x, _, y, _ = bbox
 
             node_width = x_gap + self.width(bbox)
-            # reached end of line, reset, move higher
+            # reached end of line, reset, move higher, start new group
             if total_width + node_width > max_line_width:
+                group = etree.SubElement(self.current_layer, addNS('g','svg'))
                 total_width = 0
                 total_height += self.height(computeBBox(line_nodes)) + y_gap
                 line_nodes = []
+
+            group.append(node)
 
             x_dest = x_start + total_width
             y_dest = y_start - (total_height + self.height(bbox))
