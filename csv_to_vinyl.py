@@ -95,6 +95,9 @@ class CsvToVinyl(InkscapeEffect):
             y = float(line_attribs['y'])
             line_attribs['y'] = str(y + self.delta_y)
 
+        if self.separate_sizes:
+            self.__sort_layers()
+
     def __get_layer(self, label):
         root = self.document.getroot()
         # tidy up the label
@@ -113,6 +116,18 @@ class CsvToVinyl(InkscapeEffect):
 
         layer = etree.SubElement(root, addNS('g','svg'), attrib=layer_attrib)
         return layer
+
+    def __sort_layers(self):
+        root = self.document.getroot()
+        layers = {}
+        for node in root:
+            if node.tag == addNS('g','svg'):
+                label = node.get(addNS('label','inkscape'), default='')
+                layers[label] = node
+
+        for key in sorted(layers.keys()):
+            layer = layers[key]
+            root.append(layer)
 
     def load_csv_file(self, filename, field_num=1, size_field_num=None):
         """
