@@ -125,7 +125,7 @@ class CsvToVinyl(InkscapeEffect):
                 label = node.get(addNS('label','inkscape'), default='')
                 layers[label] = node
 
-        for key in sorted(layers.keys()):
+        for key in sorted(layers.keys(), reverse=True):
             layer = layers[key]
             root.append(layer)
 
