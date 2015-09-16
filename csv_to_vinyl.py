@@ -8,6 +8,7 @@ from subprocess import check_output
 import csv
 import os.path
 import argparse
+import re
 
 from inkex import Effect as InkscapeEffect
 from inkex import etree, addNS
@@ -96,6 +97,10 @@ class CsvToVinyl(InkscapeEffect):
 
     def __get_layer(self, label):
         root = self.document.getroot()
+        # tidy up the label
+        label = label.strip().upper()
+        label = re.sub(' +', ' ', label)
+
         # return layer if already exists
         for layer in root:
             if layer.get(addNS('label','inkscape'), default=None) == str(label):
