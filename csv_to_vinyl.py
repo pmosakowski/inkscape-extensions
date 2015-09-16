@@ -101,18 +101,20 @@ class CsvToVinyl(InkscapeEffect):
 
             return lines
 
-    @staticmethod
-    def get_linespacing(text):
+    def get_linespacing(self, text):
         """
         Examines two line 'text' and returns a tuple of the sodipodi linespacing and
         delta of their y coordinates, ie. delta_y = y2 - y1.
         Returns (linespacing, delta_y)
         """
+        if len(text) > 1:
+            y1 = float(text[0].attrib["y"])
+            y2 = float(text[1].attrib["y"])
 
-        y1 = float(text[0].attrib["y"])
-        y2 = float(text[1].attrib["y"])
+            delta_y = y2 - y1
+        else:
+            delta_y = self.unittouu("10mm")
 
-        delta_y = y2 - y1
         line_spacing = text.attrib[addNS('linespacing','sodipodi')]
 
         return line_spacing, delta_y
