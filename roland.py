@@ -3,6 +3,8 @@
 import sys
 sys.path.append('/usr/share/inkscape/extensions')
 
+from collections import defaultdict
+
 from inkex import Effect as InkscapeEffect
 from inkex import etree, addNS
 
@@ -23,11 +25,19 @@ class Roland(InkscapeEffect):
             #    self.draw_bbox(bbox)
             self.place(bboxes)
 
-    @staticmethod
-    def calculate_bboxes(nodes):
+    def calculate_bboxes(self, nodes):
         bboxes = [(id, node, computeBBox([node]))
                 for id, node in nodes.items()]
-        return bboxes
+
+        nodes = defaultdict(list)
+        for id, node, bbox in bboxes:
+            nodes[self.height(bbox)].append((id,node,bbox))
+
+        ordered_bboxes = []
+        for height in sorted(nodes.keys(), reverse=True):
+            ordered_bboxes.extend(nodes[height])
+
+        return ordered_bboxes
     
     def draw_bbox(self, bbox):
         (x1, x2, y1, y2) = bbox
