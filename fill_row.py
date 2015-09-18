@@ -125,7 +125,7 @@ class FillRow(InkscapeEffect):
 
         group = etree.SubElement(self.current_layer, addNS('g','svg'))
 
-        bbox = computeBBox(node)
+        bbox = computeBBox([node])
         x, _, y, _ = bbox
         node_width = x_gap + self.width(bbox)
 
