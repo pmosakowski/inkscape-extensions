@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+
+    <_name>Draw bounding box</_name>
+    <id>net.mosakowski.inkscape.draw_bbox</id>
+
+    <dependency type="executable" location="extensions">inkex.py</dependency>
+    <dependency type="executable" location="extensions">draw_bbox.py</dependency>
+  
+    <param name="help_text" type="description">Draws bounding boxes around selected objects, useful for debugging. Author: Pawel Mosakowski</param>
+
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu _name="Cutter"/>
+        </effects-menu>
+    </effect>
+
+    <script>
+        <command reldir="extensions" interpreter="python">draw_bbox.py</command>
+    </script>
+
+</inkscape-extension>
