@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+
+    <_name>Fill row</_name>
+    <id>net.mosakowski.inkscape.fill_row</id>
+
+    <dependency type="executable" location="extensions">inkex.py</dependency>
+    <dependency type="executable" location="extensions">fill_row.py</dependency>
+  
+    <param name="help_text" type="description">Fills a row with seleted object. Author: Pawel Mosakowski</param>
+
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu _name="Cutter"/>
+        </effects-menu>
+    </effect>
+
+    <script>
+        <command reldir="extensions" interpreter="python">fill_row.py</command>
+    </script>
+
+</inkscape-extension>

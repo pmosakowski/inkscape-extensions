@@ -2,7 +2,9 @@
 
 DEST="$HOME/.config/inkscape/extensions"
 
-FILES=( "csv_to_vinyl" "roland" ) 
+FILES=( "csv_to_vinyl" 
+        "fill_row" 
+        "roland" ) 
 
 if [ ! -d "$DEST" ]; then
     mkdir -p "$DEST"
