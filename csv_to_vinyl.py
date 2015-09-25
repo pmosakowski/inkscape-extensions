@@ -106,6 +106,10 @@ class CsvToVinyl(InkscapeEffect):
         label = label.strip().upper()
         label = re.sub(' +', ' ', label)
 
+        # no label, just return current layer
+        if len(label) == 0:
+            return self.current_layer
+
         # return layer if already exists
         for layer in root:
             if layer.get(addNS('label','inkscape'), default=None) == str(label):
