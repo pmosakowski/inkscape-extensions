@@ -85,18 +85,20 @@ class CsvToVinyl(InkscapeEffect):
         # make all-caps and turn whitespace into linebreak
         lines = name.upper().split()
 
-        # add nodes to doucument tree
-        text = etree.SubElement(parent, addNS('text','svg'), attrib=text_attribs)
-        for line in lines:
-            text_line = etree.SubElement(text, addNS('tspan','svg'), attrib=line_attribs)
-            text_line.text = line
+        # skip empty strings
+        if len(lines) > 0:
+            # add nodes to doucument tree
+            text = etree.SubElement(parent, addNS('text','svg'), attrib=text_attribs)
+            for line in lines:
+                text_line = etree.SubElement(text, addNS('tspan','svg'), attrib=line_attribs)
+                text_line.text = line
 
-            # set coordinates for next line
-            y = float(line_attribs['y'])
-            line_attribs['y'] = str(y + self.delta_y)
+                # set coordinates for next line
+                y = float(line_attribs['y'])
+                line_attribs['y'] = str(y + self.delta_y)
 
-        if self.separate_sizes:
-            self.__sort_layers()
+            if self.separate_sizes:
+                self.__sort_layers()
 
     def __get_layer(self, label):
         root = self.document.getroot()
