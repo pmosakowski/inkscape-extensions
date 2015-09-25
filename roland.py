@@ -8,7 +8,8 @@ from collections import defaultdict
 from inkex import Effect as InkscapeEffect
 from inkex import etree, addNS
 
-from simpletransform import computeBBox, applyTransformToNode
+from simpletransform import computeBBox as _computeBBox
+from simpletransform import applyTransformToNode
 from simplestyle import formatStyle
 from simplepath import parsePath, translatePath, formatPath
 
@@ -26,7 +27,7 @@ class Roland(InkscapeEffect):
             self.place(bboxes)
 
     def calculate_bboxes(self, nodes):
-        bboxes = [(id, node, computeBBox([node]))
+        bboxes = [(id, node, self.computeBBox(node))
                 for id, node in nodes.items()]
 
         nodes = defaultdict(list)
@@ -86,7 +87,7 @@ class Roland(InkscapeEffect):
             if total_width + node_width > max_line_width:
                 group = etree.SubElement(self.current_layer, addNS('g','svg'))
                 total_width = 0
-                total_height += self.height(computeBBox(line_nodes)) + y_gap
+                total_height += self.height(self.computeBBox(line_nodes)) + y_gap
                 line_nodes = []
 
             group.append(node)
@@ -114,6 +115,13 @@ class Roland(InkscapeEffect):
 
             total_width += node_width
             line_nodes.append(node)
+
+    def computeBBox(self, node):
+        # turn 'node' into 1-element list if necessary
+        if type(node) == list:
+            return _computeBBox(node)
+        else:
+            return _computeBBox([node])
 
     def width(self,bbox):
         (x1, x2, y1, y2) = bbox
